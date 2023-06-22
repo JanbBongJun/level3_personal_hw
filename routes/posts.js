@@ -40,7 +40,7 @@ router
             attributes: ["nickname"],
           },
         ],
-        limit: pageSize,
+        limit: pageSize/1,
         offset: pageSize * (pageNum - 1),
       });
       res.status(200).json({

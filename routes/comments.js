@@ -37,6 +37,7 @@ router
       ? req.query.commentPageNum
       : 1;
     const commentSize = req.query.commentSize ? req.query.commentSize : 10;
+    console.log(typeof commentSize)
     if (!commentPageNum || !commentSize) {
       return res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
     }
@@ -45,7 +46,7 @@ router
         where: { PostId: postId },
         order: [["createdAt", "DESC"]],
         attributes: ["commentId", "comment", "createdAt", "updatedAt"],
-        limit: commentSize,
+        limit: commentSize/1,
         offset: commentSize * (commentPageNum - 1),
       });
 
