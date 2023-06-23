@@ -12,7 +12,7 @@ router.post("/login", async (req, res) => {
         .status(412)
         .json({ message: "닉네임 또는 패스워드를 확인해 주세요" });
     }
-    const token = jwt.sign({nickname:user.nickname},'customized-secret-key');
+    const token = jwt.sign({nickname:user.nickname},'customized-secret-key',{expiresIn:"1h"});
     console.log(token)
     res.cookie("Authorization",`Bearer ${token}`);
     res.status(200).json({token})
