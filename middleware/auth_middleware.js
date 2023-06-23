@@ -7,11 +7,11 @@ module.exports = async (req, res, next) => {
   // console.log("Authorization:"+Authorization)
   // console.log("authType:"+authType);
   // console.log("authToken:"+authToken)
-  if (!authToken || authType !== "Bearer") {
+  if (!authToken || authType !== "Bearer"||Authorization) {
     console.log(authToken);
     console.log(authType);
     return res
-      .status(401)
+      .status(403)
       .json({ message: "로그인 후 이용가능한 기능입니다." });
   }
   try {
@@ -20,7 +20,7 @@ module.exports = async (req, res, next) => {
     // console.log(user)
     if (!user) {
       res.clearCookie("Authorization");
-      return res.status(401).json({ message: "유효하지 않은 토큰입니다." });
+      return res.status(403).json({ message: "전달된 쿠키에서 오류가 발생하였습니다." });
     }
     res.locals.user = user;
     next();
@@ -29,5 +29,3 @@ module.exports = async (req, res, next) => {
     return res.status(403).json({ message: "전달된 쿠키에서 오류가 발생하였습니다" });
   }
 };
-
-//권한확인 완료

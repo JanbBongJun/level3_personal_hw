@@ -17,7 +17,7 @@ router
     }
     const post = await Posts.findOne({ where: { postId } });
     if (!post) {
-      return res.status(401).json({ message: "게시글을 찾지 못했습니다." });
+      return res.status(403).json({ message: "게시글을 찾지 못했습니다." });
     }
     try {
       await Comments.create({
@@ -28,7 +28,7 @@ router
       });
       res.status(200).json({ success: true, msg: "댓글을 생성하였습니다." });
     } catch (err) {
-      res.status(400).json({ msg: "예기치 못한 오류 발생" });
+      res.status(500).json({ msg: "예기치 못한 오류 발생" });
     }
   })
   .get(async (req, res) => {
@@ -39,7 +39,7 @@ router
     const commentSize = req.query.commentSize ? req.query.commentSize : 10;
     console.log(typeof commentSize)
     if (!commentPageNum || !commentSize) {
-      return res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
+      return res.status(412).json({ msg: "데이터 형식이 올바르지 않습니다" });
     }
     try {
       const comments = await Comments.findAll({
@@ -69,9 +69,9 @@ router
       const { comment } = req.body;
       const { userId } = res.locals.user;
       if (!commentId) {
-        return res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
+        return res.status(412).json({ msg: "데이터 형식이 올바르지 않습니다" });
       } else if (!comment) {
-        return res.status(400).json({ msg: "댓글 내용이 존재하지 않습니다" });
+        return res.status(404).json({ msg: "댓글 내용이 존재하지 않습니다" });
       }
       try {
         const [updatedCount] = await Comments.update(
@@ -82,7 +82,7 @@ router
         );
         if (!updatedCount) {
           return res
-            .status(404)
+            .status(403)
             .json({ msg: "수정할 수 있는 권한이 없습니다." });
         }
         return res

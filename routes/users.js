@@ -39,7 +39,7 @@ router.post("/signup", async (req, res) => {
     res.status(201).json({ message: "회원가입에 성공하였습니다." });
   } catch (err) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "요청한 데이터 형식이 올바르지 않습니다." });
   }
 });
@@ -61,7 +61,7 @@ router.get("/users/:userId", async (req, res) => {
     });
     if (!userInfo) {
       return res
-        .status(400)
+        .status(412)
         .json({ message: "검색된 유저가 존재하지 않습니다." });
     }
     console.log({ userInfo });

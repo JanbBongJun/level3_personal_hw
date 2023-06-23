@@ -11,18 +11,18 @@ router
     const { title, content } = req.body;
 
     if (!title || !content) {
-      return res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
+      return res.status(412).json({ msg: "데이터 형식이 올바르지 않습니다" });
     }
 
     try {
       await Posts.create({ UserId: userId, title, content });
 
-      return res.status(200).json({ msg: "게시글이 저장되었습니다" });
+      return res.status(201).json({ msg: "게시글이 저장되었습니다" });
     } catch (err) {
       console.log(err);
-      res.status(400).json({
+      res.status(500).json({
         success: false,
-        msg: "게시글 작성에 실패하였습니다.",
+        msg: "데이터베이스 연결오류",
       });
     }
   })
@@ -49,10 +49,9 @@ router
         posts,
       });
     } catch (err) {
-      console.log(err)
       return res
         .status(500)
-        .json({ success: false, msg: "예기치 못한 오류 발생" });
+        .json({ success: false, msg: "데이터베이스 연결 오류" });
     }
   });
 
@@ -75,13 +74,13 @@ router
         ],
       });
       if (!data) {
-        return res.status(404).json({ msg: "데이터를 찾을 수 없습니다" });
+        return res.status(403).json({ msg: "데이터를 찾을 수 없습니다" });
       } else {
         return res.status(200).json({ success: true, data: data });
       }
     } catch (err) {
       console.log(err);
-      return res.status(500).json({ msg: "예기치 못한 오류 발생" });
+      return res.status(500).json({ msg: "데이터베이스 연결 오류" });
     }
   })
   .put(auth_middleware, async (req, res) => {
@@ -91,12 +90,12 @@ router
     const post = await Posts.findOne({ where: { postId } });
     if (!title || !content) {
       return res
-        .status(400)
+        .status(412)
         .json({ msg: "게시글 또는 타이틀이 존재하지 않습니다" });
     }
     if (userId !== post.UserId) {
       return res
-        .status(400)
+        .status(403)
         .json({ message: "수정 권한이 존재하지 않습니다." });
     }
 
@@ -107,7 +106,7 @@ router
       .then((updatePost) => {
         if (!updatePost) {
           return res
-            .status(400)
+            .status(401)
             .json({ message: "게시글이 정상적으로 수정되지 않았습니다" });
         }
         return res
@@ -115,7 +114,7 @@ router
           .json({ msg: "게시글을 정상적으로 수정하였습니다." });
       })
       .catch((err) => {
-        return res.status(500).json({ msg: "게시글 수정에 실패하였습니다" });
+        return res.status(500).json({ msg: "데이터베이스 연결 오류" });
       });
   })
   .delete(auth_middleware, async (req, res) => {
