@@ -43,6 +43,40 @@ router.post("/signup", async (req, res) => {
       .json({ message: "요청한 데이터 형식이 올바르지 않습니다." });
   }
 });
+
+//사용자 조회
+router.get("/users/:userId", async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const userInfo = await Users.findOne({
+      attributes: ["userId", "nickname", "createdAt", "updatedAt"],
+      include: [
+        {
+          model: UserInfos,
+          attributes: ["name", "age", "gender", "profileImage"],
+        },
+      ],
+      where: { userId }
+    });
+    if (!userInfo) {
+      return res
+        .status(400)
+        .json({ message: "검색된 유저가 존재하지 않습니다." });
+    }
+    console.log({ userInfo });
+    return res.status(200).json({
+      userInfo,
+      message: "사용자 정보가 정상적으로 반환되었습니다.",
+    });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ message: "알 수 없는 오류가 발생하였습니다." });
+  }
+});
+
 module.exports = router;
 
 //회원가입 완료 ok
